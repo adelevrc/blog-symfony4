@@ -1,0 +1,68 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+	<article>
+		<h2>
+			{{article.title}}
+		</h2>
+		<div class="metadata">
+			Ecrit le
+			{{article.CreatedAt | date('d/m/Y')}}
+			à
+			{{article.CreatedAt | date('H:i')}}
+			dans la catégorie
+			{{ article.category.title }}</div>
+		<div class="content">
+			<img src={{ article.image }} alt="">
+			{{ article.content | raw }}
+
+		</div>
+	</article>
+
+	<section id="commentaires">
+		<h1>
+			{{article.comments | length }}
+			Commentaires :
+		</h1>
+		{% for comment in article.comments %}
+			<div class="comment">
+				<div class="row">
+					<div class="col-3">
+						{{ comment.author}}
+						(<small>{{ comment.createdAt | date('d/m/Y à H:i') }}</small>)
+					</div>
+					<div class="col">
+						{{ comment.content | raw }}
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+
+		{% if app.user %}
+
+			<a href="{{path('blog_edit', {'id' : article.id})}}" class="btn btn-primary">
+				Modifier l'article
+			</a>
+			<a href="{{path('article_delete', {'id' : article.id})}}" class="btn btn-primary">
+				Supprimer l'article
+			</a>
+
+			{{ form_start (commentForm) }}
+			{{ form_row(commentForm.Author, {'attr': {'placeholder' : "Votre nom" }}) }}
+			{{ form_row(commentForm.Content, {'attr': {'placeholder' : "Votre commentaire" }}) }}
+
+			<button type="submit" class="btn btn-success">
+				Ajouter un commentaire
+			</button>
+
+			{{ form_end (commentForm) }}
+
+		{% else %}
+			<h5>
+				Vous ne pouvez pas mettre de commentaires si vous n'êtes pas connectés
+				<a href="{{ path('security_login') }}" class="btn btn-primary">
+					Se connecter
+				</a>
+			</h5>
+		{% endif %}
+	{% endblock %}
